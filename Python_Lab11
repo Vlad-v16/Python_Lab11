@@ -1,0 +1,108 @@
+# Завдання 1 — створення телефонної книги
+phonebook = [
+    {"ім'я": "Олег", "прізвище": "Коваль", "телефон": "0501234567", "місто": "Київ"},
+    {"ім'я": "Марія", "прізвище": "Іванова", "телефон": "0939876543", "місто": "Львів"},
+    {"ім'я": "Андрій", "прізвище": "Петренко", "телефон": "0671122334", "місто": "Одеса"},
+    {"ім'я": "Світлана", "прізвище": "Сидоренко", "телефон": "0993322110", "місто": "Київ"},
+    {"ім'я": "Ігор", "прізвище": "Бондар", "телефон": "0734455667", "місто": "Харків"},
+]
+
+# Вивід у вигляді таблиці
+def print_phonebook(entries):
+    print(f"{'Ім\'я':<10} {'Прізвище':<15} {'Телефон':<12} {'Місто':<10}")
+    print("-" * 50)
+    for entry in entries:
+        print(f"{entry['ім\'я']:<10} {entry['прізвище']:<15} {entry['телефон']:<12} {entry['місто']:<10}")
+    print()
+
+print("Поточна телефонна книга:")
+print_phonebook(phonebook)
+
+# Завдання 2 — пошук
+def search_contacts(phonebook_data):
+    try:
+        search_field = input("Шукати за (ім'я/прізвище/місто): ").strip().lower()
+        if search_field not in ("ім'я", "прізвище", "місто"):
+            print("Неправильне поле для пошуку.")
+            return
+        search_value = input("Введіть значення для пошуку: ").strip()
+        if not search_value:
+            print("Порожній запит!")
+            return
+
+        matched_entries = [
+            entry for entry in phonebook_data
+            if entry[search_field].lower() == search_value.lower()
+        ]
+
+        if matched_entries:
+            print("Знайдені контакти:")
+            print_phonebook(matched_entries)
+        else:
+            print("Контакти не знайдені.")
+    except Exception as error:
+        print("Сталася помилка:", error)
+
+# Пошук
+search_contacts(phonebook)
+
+# Завдання 3 — оновлення та аналітика
+def update_or_delete_contact(phonebook_data):
+    try:
+        phone_input = input("Введіть номер телефону для редагування або видалення: ").strip()
+        found_contact = next(
+            (entry for entry in phonebook_data if entry["телефон"] == phone_input), None
+        )
+        if not found_contact:
+            print("Контакт не знайдено.")
+            return
+
+        user_action = input("Що зробити: оновити чи видалити? ").strip().lower()
+        if user_action == "оновити":
+            new_name = input("Нове ім'я: ").strip()
+            new_surname = input("Нове прізвище: ").strip()
+            new_city = input("Нове місто: ").strip()
+
+            if new_name:
+                found_contact["ім'я"] = new_name
+            if new_surname:
+                found_contact["прізвище"] = new_surname
+            if new_city:
+                found_contact["місто"] = new_city
+
+            print("Контакт оновлено.")
+
+        elif user_action == "видалити":
+            confirm_delete = input("Ви впевнені, що хочете видалити контакт? (так/ні): ").strip().lower()
+            if confirm_delete == "так":
+                phonebook_data.remove(found_contact)
+                print("Контакт видалено.")
+            else:
+                print("Видалення скасовано.")
+        else:
+            print("Невідома дія.")
+    except Exception as error:
+        print("Помилка при оновленні/видаленні:", error)
+
+update_or_delete_contact(phonebook)
+
+# Аналітика
+def analyze_phonebook(phonebook_data):
+    unique_cities = set(entry["місто"] for entry in phonebook_data)
+    print("\nУнікальні міста:")
+    print(", ".join(unique_cities))
+
+    city_contact_counts = {}
+    for entry in phonebook_data:
+        city_name = entry["місто"]
+        city_contact_counts[city_name] = city_contact_counts.get(city_name, 0) + 1
+
+    print("\nКількість контактів у кожному місті:")
+    for city_name, count in city_contact_counts.items():
+        print(f"{city_name}: {count}")
+
+    if city_contact_counts:
+        most_contacts_city = max(city_contact_counts, key=city_contact_counts.get)
+        print(f"\nМісто з найбільшою кількістю контактів: {most_contacts_city}")
+
+analyze_phonebook(phonebook)
